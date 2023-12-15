@@ -1,30 +1,37 @@
 #include <iostream>
 #include <cmath>
+using namespace std;
 
 int main() {
     // Заданные данные
-    double F[] = { 1.1, 1.4, 1.7, 2.1, 2.6, 4.7, 6.1, 7.0, 10.0, 12.8, 16.5, 20.8, 40.6 };
-    double v[] = { 25.0 , 22.7 , 22.1 , 19.8 , 17.0 , 12.3 , 10.7, 10.0 , 8.2 , 6.7 , 5.6 , 5.0 , 3.5 };
-    int n = sizeof(F) / sizeof(F[0]); // Количество измерений
+    double F[] = {1.1, 1.4, 1.7, 2.1, 2.6, 4.7, 6.1, 7.0, 10.0, 12.8, 16.5, 20.8, 40.6};
+    double v[] = {25.0 , 22.7 , 22.1 , 19.8 , 17.0 , 12.3 , 10.7, 10.0 , 8.2 , 6.7 , 5.6 , 5.0 , 3.5};
+    const int n = sizeof(F)/sizeof(F[0]); // Количество измерений
+
+    // Логарифмирование данных
+    double log_F[n];
+    double log_v[n];
+    for (int i = 0; i < n; ++i) {
+        log_F[i] = log(F[i]);
+        log_v[i] = log(v[i]);
+    }
 
     // Вычисление сумм
-    double sum_x = 0, sum_y = 0, sum_xy = 0, sum_x_squared = 0;
-    for (int i = 0; i < n; i++) {
-        double x = v[i];
-        double y = F[i];
-        sum_x += x;
-        sum_y += y;
-        sum_xy += x * y;
-        sum_x_squared += x * x;
+    double sum_log_F = 0, sum_log_v = 0, sum_log_F_log_v = 0, sum_log_F_squared = 0;
+    for (int i = 0; i < n; ++i) {
+        sum_log_F += log_F[i];
+        sum_log_v += log_v[i];
+        sum_log_F_log_v += log_F[i] * log_v[i];
+        sum_log_F_squared += pow(log_F[i], 2);
     }
 
     // Вычисление коэффициентов c и epsilon
-    double c = (sum_x_squared * sum_y - sum_x * sum_xy) / (n * sum_x_squared - sum_x * sum_x);
-    double epsilon = (sum_x * sum_y - n * sum_xy) / (n * sum_x_squared - sum_x * sum_x);
+    double epsilon = (n * sum_log_F_log_v - sum_log_F * sum_log_v) / (n * sum_log_F_squared - pow(sum_log_F, 2));
+    double c = exp((sum_log_v - epsilon * sum_log_F) / n);
 
     // Вывод результатов
-    std::cout << "c = " << c << std::endl;
-    std::cout << "epsilon = " << epsilon << std::endl;
+    cout << "c = " << c << endl;
+    cout << "epsilon = " << fabs(epsilon) << endl;
 
     return 0;
 }
